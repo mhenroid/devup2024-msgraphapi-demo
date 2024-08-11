@@ -1,13 +1,11 @@
 import NextAuth from "next-auth";
 import type { NextAuthConfig, Session, User } from "next-auth";
 import AzureADProvider from "next-auth/providers/azure-ad";
-import { NextRequest, NextResponse } from "next/server";
-import { isAuthorizied, AuthzAction, getUserRole } from "./authz";
+import { NextRequest } from "next/server";
 
 export interface AuthSession extends Session {
   error: any;
   access_token: string;
-  userRole: string;
 }
 
 const authorizeRoute = (request: NextRequest, auth: Session | null) => {
@@ -30,18 +28,6 @@ const authorizeRoute = (request: NextRequest, auth: Session | null) => {
     return false;
   }
 
-  // Admin pages
-  if (pathName.match(/^\/admin(\/.*|$)/)) {
-    if (!isAuthorizied(auth.user, AuthzAction.viewAdminPage)) {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    }
-    return true;
-  }
-
-  // Other protected pages
-  if (!isAuthorizied(auth.user, AuthzAction.viewUserPage)) {
-    return NextResponse.redirect(new URL("/unauthorized", request.url));
-  }
   return true;
 };
 
@@ -79,7 +65,6 @@ const config: NextAuthConfig = {
         token.access_token = account.access_token;
         token.refresh_token = account.refresh_token;
         token.expires_at = account.expires_at;
-        token.userRole = getUserRole(user);
         return token;
       }
       // @ts-ignore
@@ -130,8 +115,6 @@ const config: NextAuthConfig = {
       session.error = token.error;
       // @ts-ignore
       session.access_token = token.access_token;
-      // @ts-ignore
-      session.userRole = token.userRole;
       return session;
     },
   },

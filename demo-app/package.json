@@ -1,0 +1,36 @@
+{
+  "name": "dbs-resume-portal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "accessToken": "concurrently \"npm run dev\" \"sleepms 2000 && open http://localhost:3000/admin/accessToken\"",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "@mui/icons-material": "^5.14.18",
+    "@mui/material": "^5.14.18",
+    "concurrently": "^8.2.2",
+    "next": "14.0.3",
+    "next-auth": "^5.0.0-beta.4",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.3",
+    "sass": "^1.69.5",
+    "sleep-ms": "^2.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}

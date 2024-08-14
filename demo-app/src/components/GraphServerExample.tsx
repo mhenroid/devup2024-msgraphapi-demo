@@ -6,14 +6,24 @@ import {
 import { getAuthSession } from "@/auth/auth";
 
 export default async function GraphServerExample() {
+  // Get the access token from session state
   let session = await getAuthSession();
   let accessToken = session.access_token;
+
+  // Initialize our wrapper class
   let graphApi = new MicrosoftGraphApi(
     new AccessTokenAuthProvider(accessToken)
   );
+
+  // Simple example
   let result = await graphApi.getJson("https://graph.microsoft.com/v1.0/me");
-  // let result = await graphApi.getJson(
-  //   "https://graph.microsoft.com/v1.0/me/drive/items/01FSSII2HXBI7XWNIYTZCKHN6MID6L2NLW/workbook/worksheets/Sheet1/range/cell(row=0,column=0)"
+
+  // Demonstrate paged results
+  // When using the $top=2, only 2 results are shown per page
+  // The getPagedData will get data from more and more pages until it meets the requested count or end of data
+  // let result = await graphApi.getPagedData(
+  //   "https://graph.microsoft.com/v1.0/users?$top=2",
+  //   10
   // );
 
   return (

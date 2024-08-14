@@ -8,18 +8,6 @@ import {
   ResponseType,
 } from "@microsoft/microsoft-graph-client";
 
-export class EnvVariableAuthProvider implements AuthenticationProvider {
-  private envVariable: string;
-
-  constructor(envVariable: string) {
-    this.envVariable = envVariable;
-  }
-  getAccessToken(authenticationProviderOptions: any): Promise<string> {
-    let accessToken = process.env[this.envVariable] as string;
-    return Promise.resolve(accessToken);
-  }
-}
-
 export class AccessTokenAuthProvider implements AuthenticationProvider {
   private accessToken: string;
 
@@ -38,29 +26,6 @@ export type MicrosoftGraphApiResponse = {
   data?: any;
   status?: number;
   msg?: string;
-};
-
-const readPagedContent = async (
-  client: Client,
-  initialResponse: PageCollection,
-  maxNumber?: number
-) => {
-  let maxCountValue = maxNumber || -1;
-  let count = 0;
-  let allItems: any[] = [];
-  let callback: PageIteratorCallback = (data) => {
-    allItems.push(data);
-    count++;
-    if (count === maxCountValue) {
-      return false;
-    }
-    return true;
-  };
-
-  let pageIterator = new PageIterator(client, initialResponse, callback);
-  await pageIterator.iterate();
-
-  return allItems;
 };
 
 export class MicrosoftGraphApi {
@@ -148,7 +113,22 @@ export class MicrosoftGraphApi {
   public async getPagedData(url: string, maxItems?: number): Promise<any[]> {
     let client = this.getClient();
     let response = await this.getJson(url);
-    let items = await readPagedContent(client, response, maxItems);
-    return items;
+
+    let maxCountValue = maxItems || -1;
+    let count = 0;
+    let allItems: any[] = [];
+    let callback: PageIteratorCallback = (data) => {
+      allItems.push(data);
+      count++;
+      if (count === maxCountValue) {
+        return false;
+      }
+      return true;
+    };
+
+    let pageIterator = new PageIterator(client, response, callback);
+    await pageIterator.iterate();
+
+    return allItems;
   }
 }
